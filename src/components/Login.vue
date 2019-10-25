@@ -45,8 +45,9 @@ export default {
       this.$refs.form.validate(isValid => {
         if (!isValid) return
         axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
-          const { meta } = res.data
+          const { meta, data } = res.data
           if (meta.status === 200) {
+            localStorage.setItem('token', data.token)
             this.$message({
               message: '登录成功',
               type: 'success'
