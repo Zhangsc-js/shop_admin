@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   data () {
     return {
@@ -41,27 +40,48 @@ export default {
     reset () {
       this.$refs.form.resetFields()
     },
-    login () {
-      this.$refs.form.validate(isValid => {
-        if (!isValid) return
-        axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
-          const { meta, data } = res.data
-          if (meta.status === 200) {
-            localStorage.setItem('token', data.token)
-            this.$message({
-              message: '登录成功',
-              type: 'success'
-            })
-            this.$router.push('/index')
-          } else {
-            console.log(meta.msg)
-            this.$message({
-              message: meta.msg,
-              type: 'error'
-            })
-          }
-        })
-      })
+    async login () {
+      try {
+        await this.$refs.form.validate()
+        const { meta, data } = await this.$axios.post('login', this.form)
+        if (meta.status === 200) {
+          localStorage.setItem('token', data.token)
+          this.$message({
+            message: '登录成功',
+            type: 'success'
+          })
+          this.$router.push('/index')
+        } else {
+          console.log(meta.msg)
+          this.$message({
+            message: meta.msg,
+            type: 'error'
+          })
+        }
+      } catch (e) {
+        console.log(e)
+      }
+
+      // await this.$refs.form.validate(isValid => {
+      //   if (!isValid) return
+      //   this.$axios.post('login', this.form).then(res => {
+      //     const { meta, data } = res
+      //     if (meta.status === 200) {
+      //       localStorage.setItem('token', data.token)
+      //       this.$message({
+      //         message: '登录成功',
+      //         type: 'success'
+      //       })
+      //       this.$router.push('/index')
+      //     } else {
+      //       console.log(meta.msg)
+      //       this.$message({
+      //         message: meta.msg,
+      //         type: 'error'
+      //       })
+      //     }
+      //   })
+      // })
     }
   }
 }
